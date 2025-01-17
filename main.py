@@ -1,5 +1,20 @@
 import feedparser
 import sys
+import pyshorteners
+
+# Shortens a given url using tinyURL
+def shorten_url(url):
+     s = pyshorteners.Shortener()
+     try:
+          short_url = s.tinyurl.short(url)
+          return short_url
+     except Exception as e:
+          print(f"Error shortening URL: {e}")
+          return url
+
+# Cleans a news title by removing the source name
+def clean_title(title):
+     return title.rsplit(' - ', 1)[0].strip()
 
 def fetch_news(search_terms, max_articles):
         for search_term in search_terms:
@@ -9,16 +24,16 @@ def fetch_news(search_terms, max_articles):
 
         if gn_feed.entries[:max_articles]:
             for news_item in gn_feed.entries[:max_articles]:
-                news_title = news_item.title
-                news_link = news_item.link
+                news_title = clean_title(news_item.title)
+                news_link = shorten_url(news_item.link)
                 publication_date = news_item.published
-                news_source = news_item.source
+                news_source = news_item.source.get("title")
+                source_url = news_item.source.get("href")
                 print(
-                    f"Headline: {news_title}\nPublished: {publication_date}\nSource: {news_source}\nURL: {news_link}"
+                    f"Headline: {news_title}\nURL: {news_link}\nPublished: {publication_date}\nSource: {news_source} ({source_url})"
                 )
                 print(20 * "-")
-        else:
-            print(f"No news found for the term: {search_term}")
+            # print(f"No news found for the term: {search_term}")
 
 if __name__ == "__main__":
     search_terms = sys.argv[1:-1]
