@@ -26,3 +26,5 @@ if __name__ == "__main__":
         print("No search terms provided. Exiting.")
         sys.exit()
     fetch_news(search_terms)
+
+# python main.py "meta llama 3.2" "chatgpt o1 model"
